@@ -15,8 +15,27 @@ class PairController extends Controller
     public function index()
     {
         $pairs = Pair::all();
+        $formatedPairs = [];
 
-        return response()->json($pairs);
+        foreach($pairs as $pair) {
+
+            array_push(
+                $formatedPairs, 
+                [
+                    "currencyFrom" => [
+                        "code" => $pair->currencyFrom->code,
+                        "name" => $pair->currencyFrom->name,
+                    ],
+                    "currencyTo" => [
+                        "code" => $pair->currencyTo->code,
+                        "name" => $pair->currencyTo->name,
+                    ],
+                    "rate" => $pair->rate
+                ]
+            );
+        };
+        
+        return response()->json($formatedPairs);
     }
 
     /**
