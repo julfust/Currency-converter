@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         
-        $this->call(CurrenciesConvertionSeeder::class);
+        $this->call(CurrencyTableSeeder::class);
+        $this->call(PairTableSeeder::class);
     }
 }

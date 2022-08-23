@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('currencies_convertions', function (Blueprint $table) {
+        Schema::create('conversions', function (Blueprint $table) {
             $table->increments("id");
-            $table->string("currenciesFrom", 100);
-            $table->string("currenciesTo", 100);
-            $table->float("rate", 9, 3);
-            $table->bigInteger("requests_number");
+            $table->unsignedInteger("pair_id")->nullable();
+            $table->bigInteger("requests_number")->nullable();
             $table->timestamps();
+
+            $table->foreign("pair_id")->references("id")->on("pairs")->onDelete("cascade")->nullable();
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('currencies_convertions');
+        Schema::dropIfExists('conversions');
     }
 };

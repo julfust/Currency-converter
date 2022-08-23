@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CurrenciesConvertion;
+use App\Models\Pair;
 use Illuminate\Http\Request;
 
-class CurrenciesConvertionController extends Controller
+class PairController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,9 +14,9 @@ class CurrenciesConvertionController extends Controller
      */
     public function index()
     {
-        $currenciesConvertion = CurrenciesConvertion::all();
+        $pairs = Pair::all();
 
-        return response()->json($currenciesConvertion);
+        return response()->json($pairs);
     }
 
     /**
@@ -27,14 +27,14 @@ class CurrenciesConvertionController extends Controller
      */
     public function store(Request $request)
     {
-        $currenciesConvertion = CurrenciesConvertion::create([
+        $pair = Pair::create([
             "currenciesFrom" => $request->currenciesFrom,
             "currenciesTo" => $request->currenciesTo,
             "rate" => $request->rate,
             "requests_number" => 0,
         ]);
 
-        return response()->json($currenciesConvertion, 201);
+        return response()->json($pair, 201);
     }
 
     /**
@@ -55,9 +55,9 @@ class CurrenciesConvertionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $currenciesConvertion)
+    public function update(Request $request, $pair)
     {
-        $currenciesConvertion->update([
+        $pair->update([
             "currenciesFrom" => $request->currenciesFrom,
             "currenciesTo" => $request->currenciesTo,
             "rate" => $request->rate,
@@ -72,9 +72,9 @@ class CurrenciesConvertionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($currenciesConvertion)
+    public function destroy($pair)
     {
-        $currenciesConvertion->delete();
+        $pair->delete();
 
         return response()->json();
     }
