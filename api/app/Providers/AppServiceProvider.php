@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Define dynamic relationships between foreign key and model of currencyFrom and currencyTo
         Pair::resolveRelationUsing('currencyFrom', function ($pairModel) {
             return $pairModel->belongsTo(Currency::class, 'currency_from_id');
         });

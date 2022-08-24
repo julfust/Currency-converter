@@ -22,6 +22,7 @@ class PairController extends Controller
             array_push(
                 $formatedPairs, 
                 [
+                    "id" => $pair->id,
                     "currencyFrom" => [
                         "code" => $pair->currencyFrom->code,
                         "name" => $pair->currencyFrom->name,
