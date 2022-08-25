@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Currency;
 use App\Models\Pair;
 use Illuminate\Http\Request;
 
@@ -47,11 +48,28 @@ class PairController extends Controller
      */
     public function store(Request $request)
     {
+
+        $currencyFrom = Currency::where("code", $request->currencyFrom['code'])->get()->first();
+        $currencyTo = Currency::where("code", $request->currencyTo['code'])->get()->first();
+
+        if(empty($currencyFrom)) {
+            $currencyFrom = Currency::create([
+                "code" => $request->currencyFrom['code'],
+                "name" => $request->currencyFrom['name']
+            ]);
+        }
+
+        if(empty($currencyTo)) {
+            $currencyTo = Currency::create([
+                "code" => $request->currencyTo['code'],
+                "name" => $request->currencyTo['name']
+            ]);
+        }
+
         $pair = Pair::create([
-            "currenciesFrom" => $request->currenciesFrom,
-            "currenciesTo" => $request->currenciesTo,
-            "rate" => $request->rate,
-            "requests_number" => 0,
+            "currency_from_id" => $currencyFrom->id,
+            "currency_to_id" => $currencyTo->id,
+            "rate" => $request->rate
         ]);
 
         return response()->json($pair, 201);

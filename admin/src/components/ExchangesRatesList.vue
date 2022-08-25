@@ -48,14 +48,24 @@
                     </div>
 
                     <div class="flex justify-center items-center col-span-2">
-                        <el-button v-if="props.row.id === 'new'" type="success">Créer</el-button>
+                        <el-button v-if="props.row.id === 'new'" type="success" @click="createPair">Créer</el-button>
                         <el-button v-if="props.row.id !== 'new'" type="primary">Enregistrer</el-button>
                         <el-button @click="toggleForm(props.row)">Annuler</el-button>
                     </div>
                 </div>
             </el-table-column>
-            <el-table-column prop="currencyFrom.code" label="devise principal" class="w-full" />
-            <el-table-column prop="currencyTo.code" label="devise de conversion" class="w-full" />
+            <el-table-column #default="props" label="devise principal" class="w-full">
+                <div class="flex flex-col justify-start items-start">
+                    <span class="text-md">{{ props.row.currencyTo.code }}</span>
+                    <span class="text-sm">{{ props.row.currencyTo.name }}</span>
+                </div>
+            </el-table-column>
+            <el-table-column #default="props" label="devise de conversion" class="w-full">
+                <div class="flex flex-col justify-start items-start">
+                    <span class="text-md">{{ props.row.currencyFrom.code }}</span>
+                    <span class="text-sm">{{ props.row.currencyFrom.name }}</span>
+                </div>
+            </el-table-column>
             <el-table-column prop="rate" label="Taux" class="w-full" />
             <el-table-column #default="props" label="Operations" class="w-full">
                 <el-button 
@@ -126,7 +136,7 @@
 
     onMounted(() => {
 
-        axios("http://127.0.01:8000/api/pairs")
+        axios("http://127.0.0.1:8000/api/pairs")
         .then(response => exchangesRatesList.value = response.data);
     });
 
@@ -158,19 +168,6 @@
         }
     }
 
-    function initNewPair() {
-
-        exchangesRatesList.value.unshift({
-            id: "new",
-            currencyFrom: { code: "", name: ""},
-            currencyTo: { code: "", name: ""},
-            rate: 1
-        });
-
-        expands.value = [];
-        expands.value.push("new");
-    }
-
     function closeForm() {
 
         if(expands.value.includes("new")) {
@@ -187,6 +184,36 @@
         secondaryCurrencyName.value = null;
 
         exchangesRate.value = null;
+    }
+
+    function initNewPair() {
+
+        exchangesRatesList.value.unshift({
+            id: "new",
+            currencyFrom: { code: "", name: ""},
+            currencyTo: { code: "", name: ""},
+            rate: 1
+        });
+
+        expands.value = [];
+        expands.value.push("new");
+    }
+
+    function createPair() {
+
+        const formatedData = {
+            currencyFrom: {
+                code: primaryCurrencyCode.value,
+                name: primaryCurrencyName.value
+            },
+            currencyTo: {
+                code: secondaryCurrencyCode.value,
+                name: secondaryCurrencyName.value
+            },
+            rate: exchangesRate.value
+        }
+
+        axios.post("http://127.0.0.1:8000/api/pairs", formatedData).then(res => console.log(res));
     }
 
     function updatePair() {
