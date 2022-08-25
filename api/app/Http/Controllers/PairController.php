@@ -25,10 +25,12 @@ class PairController extends Controller
                 [
                     "id" => $pair->id,
                     "currencyFrom" => [
+                        "id" => $pair->currencyFrom->id,
                         "code" => $pair->currencyFrom->code,
                         "name" => $pair->currencyFrom->name,
                     ],
                     "currencyTo" => [
+                        "id" => $pair->currencyTo->id,
                         "code" => $pair->currencyTo->code,
                         "name" => $pair->currencyTo->name,
                     ],
@@ -46,25 +48,27 @@ class PairController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $PairRequest)
     {
 
-        if(empty(Pair::where('currency_from_id', $request->currencyFromId)->where("currency_to_id", $request->currencyToId))) {
+        if(empty(Pair::where('currency_from_id', $PairRequest->currencyFromId)->where("currency_to_id", $PairRequest->currencyToId)->first())) {
 
             $pair = Pair::create([
-                "currency_from_id" => $request->currencyFromId,
-                "currency_to_id" => $request->currencyToId,
-                "rate" => $request->rate
+                "currency_from_id" => $PairRequest->currencyFromId,
+                "currency_to_id" => $PairRequest->currencyToId,
+                "rate" => $PairRequest->rate
             ]);
 
             return response()->json(
                 [
                     "id" => $pair->id,
                     "currencyFrom" => [
+                        "id" => $pair->currencyFrom->id,
                         "code" => $pair->currencyFrom->code,
                         "name" => $pair->currencyFrom->name,
                     ],
                     "currencyTo" => [
+                        "id" => $pair->currencyTo->id,
                         "code" => $pair->currencyTo->code,
                         "name" => $pair->currencyTo->name,
                     ],
@@ -97,15 +101,41 @@ class PairController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $pair)
+    public function update(Request $PairRequest, $id)
     {
-        $pair->update([
-            "currenciesFrom" => $request->currenciesFrom,
-            "currenciesTo" => $request->currenciesTo,
-            "rate" => $request->rate,
-        ]);
 
-        return response()->json();
+        if(empty(Pair::where('currency_from_id', $PairRequest->currencyFromId)->where("currency_to_id", $PairRequest->currencyToId)->first())) {
+
+            $pair = Pair::find($id);
+
+            $pair->update([
+                "currency_from_id" => $PairRequest->currencyFromId,
+                "currency_to_id" => $PairRequest->currencyToId,
+                "rate" => $PairRequest->rate
+            ]);
+
+            return response()->json(
+                [
+                    "id" => $pair->id,
+                    "currencyFrom" => [
+                        "id" => $pair->currencyFrom->id,
+                        "code" => $pair->currencyFrom->code,
+                        "name" => $pair->currencyFrom->name,
+                    ],
+                    "currencyTo" => [
+                        "id" => $pair->currencyTo->id,
+                        "code" => $pair->currencyTo->code,
+                        "name" => $pair->currencyTo->name,
+                    ],
+                    "rate" => $pair->rate
+                ], 
+                201
+            );
+        }
+
+        return response()->json([
+            "message" => "La paire de conversion existe déjà"
+        ], 409);
     }
 
     /**

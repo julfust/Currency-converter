@@ -1,8 +1,15 @@
 <template>
     <div class="w-4/5">
+
         <div class="w-full flex justify-end items-start pb-4">
-            <el-button type="primary" @click="initNewPair">Ajouter un taux de change</el-button>
+            <el-button 
+                type="primary" 
+                @click="initNewPair"
+                :disabled="expands.includes('new')">
+                Ajouter un taux de change
+            </el-button>
         </div>
+
         <el-table 
             class="w-full"
             border
@@ -10,120 +17,119 @@
             :row-key='getRowKeys'
             :expand-row-keys="expands"
             :row-class-name="tableRowClassName">
+
             <el-table-column #default="props" type="expand">
+                
+                <el-form
+                    ref="ruleFormRef"
+                    :model="exchangesRateForm"
+                    :rules="rules"
+                    class="demo-ruleForm"
+                    label-width="auto"
+                    size="default"
+                    label-position="top"
+                    status-icon>
 
-                <div class="grid grid-cols-2 gap-x-8 px-6 py-3">
+                    <div class="flex flex-col justify-start items-center pt-6">
 
-                    <div class="col-span-2 flex justify-center items-center">
-                        <h2 class="text-base font-semibold">Devise principale:</h2>
+                        <div class="flex flex-col justify-start items-center pb-6">
+
+                            <h2 for="currencyFrom" class="text-md font-semibold text-center pb-2">Devise principale:</h2>
+
+                            <el-form-item>
+
+                                <el-select 
+                                    class="w-96" 
+                                    name="currencyFrom" 
+                                    v-model="exchangesRateForm.currencyFromId">
+
+                                    <template v-for="currency in currenciesList" :key="currency.id">
+                                        <el-option 
+                                            v-model="exchangesRateForm.currencyFromId" 
+                                            :label="currency.code" 
+                                            :value="currency.id">
+                                            {{ currency.code }} ( {{ currency.name }} )
+                                        </el-option>
+                                    </template>
+                                </el-select>
+                            </el-form-item>
+                        </div>
+
+                        <div class="flex flex-col justify-start items-center pb-6">
+
+                            <h2 for="currencyTo" class="text-md font-semibold text-center pb-2">Devise secondaire:</h2>
+
+                            <el-form-item>
+
+                                <el-select 
+                                    class="w-96" 
+                                    name="currencyTo" 
+                                    v-model="exchangesRateForm.currencyToId">
+
+                                    <template v-for="currency in currenciesList" :key="currency.id">
+                                        <el-option 
+                                            v-model="exchangesRateForm.currencyToId" 
+                                            :label="currency.code" 
+                                            :value="currency.id">
+                                            {{ currency.code }} ( {{ currency.name }} )
+                                        </el-option>
+                                    </template>
+                                </el-select>
+                            </el-form-item>
+                        </div>
+
+                        <div class="flex flex-col justify-start items-center pb-6">
+
+                            <h2 for="rate" class="text-md font-semibold text-center pb-2">Taux de change:</h2>
+                            
+                            <el-form-item>
+                                
+                                <el-input-number
+                                    name="rate"
+                                    :step="0.01"
+                                    :min="0.01"
+                                    controls-position="right"
+                                    v-model="exchangesRateForm.rate" />
+                            </el-form-item>
+                        </div>
+
+                        <div class="w-full flex justify-center items-center pb-6">
+
+                            <el-button 
+                                v-if="props.row.id === 'new'"
+                                type="success"
+                                @click="createPair"
+                                :disabled="v$.$invalid">
+                                Créer
+                            </el-button>
+
+                            <el-button 
+                                v-if="props.row.id !== 'new'" 
+                                type="primary" 
+                                @click="updatePair(props.row.id)"
+                                :disabled="v$.$invalid">
+                                Enregistrer
+                            </el-button>
+
+                            <el-button @click="toggleForm(props.row)">Fermer</el-button> 
+                        </div>
                     </div>
-
-                    <div class="flex flex-col justify-start items-center">
-                        <label for="currencyFrom" class="pb-2">Code:</label>
-                        <el-input 
-                            name="currencyFrom" 
-                            v-model="exchangesRateForm.currencyFrom.code" 
-                            @blur="v$.currencyFrom.code.$touch" />
-                        <p 
-                            v-for="error of v$.currencyFrom.code.$errors" 
-                            :key="error.$uid" 
-                            class="self-start font-semibold text-red-600">
-                            {{ error.$message }}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col justify-start items-center pb-10">
-                        <label for="currencyFrom" class="pb-2">Nom:</label>
-                        <el-input 
-                            name="currencyFrom" 
-                            v-model="exchangesRateForm.currencyFrom.name" 
-                            @blur="v$.currencyFrom.name.$touch" />
-                        <p 
-                            v-for="error of v$.currencyFrom.name.$errors" 
-                            :key="error.$uid" 
-                            class="self-start font-semibold text-red-600">
-                            {{ error.$message }}
-                        </p>
-                    </div>
-
-                    <div class="col-span-2 flex justify-center items-center">
-                        <h2 class="text-base font-semibold">Devise secondaire:</h2>
-                    </div>
-
-                    <div class="flex flex-col justify-start items-center">
-                        <label for="currencyFrom" class="pb-2">Code:</label>
-                        <el-input 
-                            name="currencyTo" 
-                            v-model="exchangesRateForm.currencyTo.code" 
-                            @blur="v$.currencyTo.code.$touch" />
-                        <p 
-                            v-for="error of v$.currencyTo.code.$errors" 
-                            :key="error.$uid" 
-                            class="self-start font-semibold text-red-600">
-                            {{ error.$message }}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col justify-start items-center pb-10">
-                        <label for="currencyFrom" class="pb-2">Nom:</label>
-                        <el-input 
-                            name="currencyTo" 
-                            v-model="exchangesRateForm.currencyTo.name" 
-                            @blur="v$.currencyTo.name.$touch" />
-                        <p 
-                            v-for="error of v$.currencyTo.name.$errors" 
-                            :key="error.$uid" 
-                            class="self-start font-semibold text-red-600">
-                            {{ error.$message }}
-                        </p>
-                    </div>
-
-                    <div class="flex flex-auto flex-col justify-start items-center col-span-2 pb-8">
-                        <label for="rate" class="text-base font-semibold pb-4">Taux de change:</label>
-                        <el-input-number 
-                            :step="0.01"
-                            :min="0.01"
-                            controls-position="right"
-                            v-model="exchangesRateForm.rate"
-                            @blur="v$.rate.$touch" />
-                        <p 
-                            v-for="error of v$.rate.$errors"
-                            :key="error.$uid"
-                            class="font-semibold text-red-600">
-                            {{ error.$message }}
-                        </p>
-                    </div>
-
-                    <div class="flex justify-center items-center col-span-2 pb-8">
-                        <el-button 
-                            v-if="props.row.id === 'new'"
-                            type="success"
-                            @click="createPair"
-                            :disabled="v$.$invalid">
-                            Créer
-                        </el-button>
-                        <el-button 
-                            v-if="props.row.id !== 'new'" 
-                            type="primary" 
-                            @click="updatePair"
-                            :disabled="v$.$invalid">
-                            Enregistrer
-                        </el-button>
-                        <el-button @click="toggleForm(props.row)">Annuler</el-button>
-                    </div>
-
-                </div>
+                </el-form>
             </el-table-column>
 
             <el-table-column #default="props" label="devise principal" class="w-full">
+                
                 <div class="flex flex-col justify-start items-start">
+                    
                     <span class="text-md">{{ props.row.currencyFrom.code }}</span>
                     <span class="text-sm">{{ props.row.currencyFrom.name }}</span>
                 </div>
             </el-table-column>
 
             <el-table-column #default="props" label="devise de conversion" class="w-full">
+
                 <div class="flex flex-col justify-start items-start">
+
                     <span class="text-md">{{ props.row.currencyTo.code }}</span>
                     <span class="text-sm">{{ props.row.currencyTo.name }}</span>
                 </div>
@@ -132,6 +138,7 @@
             <el-table-column prop="rate" label="Taux" class="w-full" />
 
             <el-table-column #default="props" label="Operations" class="w-full">
+                
                 <el-button 
                     v-if="props.row.id !== 'new'"
                     size="small"
@@ -139,6 +146,7 @@
                     @click="toggleForm(props.row)">
                     Modifier
                 </el-button>
+                
                 <el-button
                     v-if="props.row.id !== 'new'"
                     size="small"
@@ -174,6 +182,8 @@
 </style>
 
 <script setup>
+    import currenciesFixtures from "@/fixtures/currencies.js";
+    import exchangesRatesFixtures from "@/fixtures/exchangesRates.js";
     import { onMounted, reactive, ref } from "vue";
     import useVuelidate from '@vuelidate/core';
     import { required, minLength, maxLength, helpers } from '@vuelidate/validators';
@@ -190,37 +200,18 @@
         return ''
     }
 
+    let currenciesList = ref();
     let exchangesRatesList = ref();
 
     const exchangesRateForm = reactive({
-        currencyFrom: {
-            code: "",
-            name: ""
-        },
-        currencyTo: {
-            code: "",
-            name: ""
-        },
-        rate: 0
+        currencyFromId: null,
+        currencyToId: null,
+        rate: null
     });
 
     const rules = {
-        currencyFrom: {
-            code: {
-                required: helpers.withMessage('Cette valeur est requise', required), 
-                minLength: helpers.withMessage('Le code de la devise doit faire 3 caractères', minLength(3)),
-                maxLength: helpers.withMessage('Le code de la devise doit faire 3 caractères', maxLength(3))
-            },
-            name: { required: helpers.withMessage('Cette valeur est requise', required) }
-        },
-        currencyTo: {
-            code: {
-                required: helpers.withMessage('Cette valeur est requise', required), 
-                minLength: helpers.withMessage('Le code de la devise doit faire 3 caractères', minLength(3)),
-                maxLength: helpers.withMessage('Le code de la devise doit faire 3 caractères', maxLength(3))
-            },
-            name: { required: helpers.withMessage('Cette valeur est requise', required) }
-        },
+        currencyFromId: { required: helpers.withMessage('Cette valeur est requise', required) },
+        currencyToId: { required: helpers.withMessage('Cette valeur est requise', required) },
         rate: { required: helpers.withMessage('Cette valeur est requise', required) }
     };
 
@@ -231,7 +222,12 @@
 
     onMounted(() => {
 
-        axios("http://127.0.0.1:8000/api/pairs").then(response => exchangesRatesList.value = response.data);
+        Promise.all([axios("http://127.0.0.1:8000/api/currencies"), axios("http://127.0.0.1:8000/api/pairs")])
+        .then(response => {
+
+            currenciesList.value = response[0].data;
+            exchangesRatesList.value = response[1].data;
+        });
     })
 
     function toggleForm(row) {
@@ -246,32 +242,12 @@
 
         if(row && previousSelect !== row.id) {
              
-            exchangesRateForm.currencyFrom.code = row.currencyFrom.code, 
-            exchangesRateForm.currencyFrom.name = row.currencyFrom.name,
-            exchangesRateForm.currencyTo.code = row.currencyTo.code, 
-            exchangesRateForm.currencyTo.name = row.currencyFrom.name, 
-            exchangesRateForm.rate = row.rate
+            exchangesRateForm.currencyFromId = row.currencyFrom.id;
+            exchangesRateForm.currencyToId = row.currencyTo.id;
+            exchangesRateForm.rate = row.rate;
 
             expands.value.push(row.id);
         }
-    }
-
-    function closeForm() {
-
-        if(expands.value.includes("new")) {
-
-            exchangesRatesList.value.shift();
-        }
-
-        expands.value = [];
-
-        exchangesRateForm.currencyFrom.code = null;
-        exchangesRateForm.currencyFrom.name = null;
-
-        exchangesRateForm.currencyTo.code = null;
-        exchangesRateForm.currencyTo.name = null;
-
-        exchangesRateForm.rate = null;
     }
 
     function initNewPair() {
@@ -283,25 +259,30 @@
             rate: 1
         });
 
-        expands.value = [];
+        closeForm();
+
+        exchangesRateForm.rate = 1;
+
         expands.value.push("new");
+    }
+
+    function closeForm() {
+
+        if(expands.value.includes("new")) {
+
+            exchangesRatesList.value.shift();
+        }
+
+        expands.value = [];
+
+        exchangesRateForm.currencyFromId = null;
+        exchangesRateForm.currencyToId = null;
+        exchangesRateForm.rate = null;
     }
 
     function createPair() {
 
-        const formatedData = {
-            currencyFrom: {
-                code: exchangesRateForm.currencyFrom.code.trim().toUpperCase(),
-                name: exchangesRateForm.currencyFrom.name.trim()
-            },
-            currencyTo: {
-                code: exchangesRateForm.currencyTo.code.trim().toUpperCase(),
-                name: exchangesRateForm.currencyTo.name.trim()
-            },
-            rate: exchangesRateForm.rate
-        }
-
-        axios.post("http://127.0.0.1:8000/api/pairs", formatedData).then(res => {
+        axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm).then(res => {
 
             expands.value = [];
             exchangesRatesList.value.shift();
@@ -309,8 +290,15 @@
         });
     }
 
-    function updatePair() {
+    function updatePair(id) {
         
-        console.log(exchangesRateForm);
+        axios.put(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm).then(res => {
+
+            let exchangesRatesListCopy = [...exchangesRatesList.value];
+            const exchangesRateIndex = exchangesRatesListCopy.findIndex(exchangesRate => exchangesRate.id === id);
+
+            exchangesRatesListCopy[exchangesRateIndex] = res.data;
+            exchangesRatesList.value = exchangesRatesListCopy;
+        })
     }
 </script>
