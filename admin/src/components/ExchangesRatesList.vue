@@ -102,7 +102,13 @@
                             :disabled="v$.$invalid">
                             Créer
                         </el-button>
-                        <el-button v-if="props.row.id !== 'new'" type="primary">Enregistrer</el-button>
+                        <el-button 
+                            v-if="props.row.id !== 'new'" 
+                            type="primary" 
+                            @click="updatePair"
+                            :disabled="v$.$invalid">
+                            Enregistrer
+                        </el-button>
                         <el-button @click="toggleForm(props.row)">Annuler</el-button>
                     </div>
 
