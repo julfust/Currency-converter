@@ -72,7 +72,21 @@ class PairController extends Controller
             "rate" => $request->rate
         ]);
 
-        return response()->json($pair, 201);
+        return response()->json(
+            [
+                "id" => $pair->id,
+                "currencyFrom" => [
+                    "code" => $pair->currencyFrom->code,
+                    "name" => $pair->currencyFrom->name,
+                ],
+                "currencyTo" => [
+                    "code" => $pair->currencyTo->code,
+                    "name" => $pair->currencyTo->name,
+                ],
+                "rate" => $pair->rate
+            ], 
+            201
+        );
     }
 
     /**
