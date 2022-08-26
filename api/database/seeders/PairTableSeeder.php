@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Currency;
 use App\Models\Pair;
+use App\Models\Request;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,10 +25,15 @@ class PairTableSeeder extends Seeder
 
                 if($currency->id !== $currencies[$i]->id) {
 
-                    Pair::create([
+                    $pair = Pair::create([
                         "rate" => 0.85,
                         "currency_from_id" => $currencies[$i]->id,
                         "currency_to_id" => $currency->id
+                    ]);
+
+                    Request::create([
+                        "pair_id" => $pair->id,
+                        "number" => rand(1, 5000)
                     ]);
                 }
     

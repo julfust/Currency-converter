@@ -15,5 +15,9 @@ class Pair extends Model
         'rate'
     ];
 
+    public function request() {
+        return $this->hasOne(Request::class);
+    }
+
     // currencyFrom and currencyTo properties provided into app/Providers/AppServiceProvider.php file by defining dynamic relationships
 }

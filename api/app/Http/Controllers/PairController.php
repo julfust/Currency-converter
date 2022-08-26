@@ -34,7 +34,8 @@ class PairController extends Controller
                         "code" => $pair->currencyTo->code,
                         "name" => $pair->currencyTo->name,
                     ],
-                    "rate" => $pair->rate
+                    "rate" => $pair->rate,
+                    "requestsNumber" => $pair->request->number
                 ]
             );
         };
@@ -72,7 +73,8 @@ class PairController extends Controller
                         "code" => $pair->currencyTo->code,
                         "name" => $pair->currencyTo->name,
                     ],
-                    "rate" => $pair->rate
+                    "rate" => $pair->rate,
+                    "requestsNumber" => 0
                 ], 
                 201
             );
@@ -127,7 +129,8 @@ class PairController extends Controller
                         "code" => $pair->currencyTo->code,
                         "name" => $pair->currencyTo->name,
                     ],
-                    "rate" => $pair->rate
+                    "rate" => $pair->rate,
+                    "RequestsNumber" => $pair->request->number
                 ], 
                 201
             );

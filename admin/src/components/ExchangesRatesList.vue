@@ -135,6 +135,8 @@
 
             <el-table-column prop="rate" label="Taux" class="w-full" />
 
+            <el-table-column prop="requestsNumber" label="Nombre de requêtes" class="w-full" />
+
             <el-table-column #default="props" label="Operations" class="w-full">
                 
                 <el-button 

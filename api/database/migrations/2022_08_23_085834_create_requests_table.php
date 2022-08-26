@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('conversions', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->increments("id");
-            $table->unsignedInteger("pair_id")->nullable();
-            $table->bigInteger("requests_number")->nullable();
+            $table->unsignedInteger("pair_id");
+            $table->bigInteger("number");
             $table->timestamps();
 
             $table->foreign("pair_id")->references("id")->on("pairs")->onDelete("cascade")->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('conversions');
+        Schema::dropIfExists('requests');
     }
 };
