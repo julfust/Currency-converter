@@ -144,10 +144,12 @@ class PairController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($pair)
+    public function destroy($id)
     {
+        $pair = Pair::find($id);
+
         $pair->delete();
 
-        return response()->json();
+        return response()->json([ "deleted" => "true" ]);
     }
 }

@@ -36,7 +36,7 @@
 
                             <h2 for="currencyFrom" class="text-md font-semibold text-center pb-2">Devise principale:</h2>
 
-                            <el-form-item>
+                            <el-form-item prop="currencyFromId">
 
                                 <el-select 
                                     class="w-96" 
@@ -59,7 +59,7 @@
 
                             <h2 for="currencyTo" class="text-md font-semibold text-center pb-2">Devise secondaire:</h2>
 
-                            <el-form-item>
+                            <el-form-item prop="currencyToId">
 
                                 <el-select 
                                     class="w-96" 
@@ -82,7 +82,7 @@
 
                             <h2 for="rate" class="text-md font-semibold text-center pb-2">Taux de change:</h2>
                             
-                            <el-form-item>
+                            <el-form-item prop="rate">
                                 
                                 <el-input-number
                                     name="rate"
@@ -98,16 +98,14 @@
                             <el-button 
                                 v-if="props.row.id === 'new'"
                                 type="success"
-                                @click="createPair"
-                                :disabled="v$.$invalid">
+                                @click="createPair">
                                 Créer
                             </el-button>
 
                             <el-button 
                                 v-if="props.row.id !== 'new'" 
                                 type="primary" 
-                                @click="updatePair(props.row.id)"
-                                :disabled="v$.$invalid">
+                                @click="updatePair(props.row.id)">
                                 Enregistrer
                             </el-button>
 
@@ -151,14 +149,14 @@
                     v-if="props.row.id !== 'new'"
                     size="small"
                     type="danger"
-                    @click="deleteDialogVisible = true">
+                    @click="deletedDialogId = props.row.id">
                     Supprimer
                 </el-button>
             </el-table-column>
         </el-table>
 
         <el-dialog
-            v-model="deleteDialogVisible"
+            v-model="deletedDialogId"
             title="Suppression d'un taux de change"
             width="30%"
             destroy-on-close
@@ -167,8 +165,8 @@
             <p><strong>Souhaitez-vous continuer ?</strong></p>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="deleteDialogVisible = false">Annuler</el-button>
-                    <el-button type="danger" @click="deleteDialogVisible = false">Confirmer</el-button>
+                    <el-button @click="deletedDialogId = null">Annuler</el-button>
+                    <el-button type="danger" @click="deletePair(deletedDialogId)">Confirmer</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -182,42 +180,29 @@
 </style>
 
 <script setup>
-    import currenciesFixtures from "@/fixtures/currencies.js";
-    import exchangesRatesFixtures from "@/fixtures/exchangesRates.js";
     import { onMounted, reactive, ref } from "vue";
-    import useVuelidate from '@vuelidate/core';
-    import { required, minLength, maxLength, helpers } from '@vuelidate/validators';
     import axios from "axios";
 
     const getRowKeys = (row) => row.id;
-
-    const tableRowClassName = (item) => {
-
-        if (item.rowIndex === 0 && item.row.id === "new") {
-            return 'success-row'
-        }
-
-        return ''
-    }
+    const tableRowClassName = (item) => item.rowIndex === 0 && item.row.id === "new" ? 'success-row' : '';
 
     let currenciesList = ref();
     let exchangesRatesList = ref();
 
+    const ruleFormRef = ref();
     const exchangesRateForm = reactive({
         currencyFromId: null,
         currencyToId: null,
         rate: null
     });
 
-    const rules = {
-        currencyFromId: { required: helpers.withMessage('Cette valeur est requise', required) },
-        currencyToId: { required: helpers.withMessage('Cette valeur est requise', required) },
-        rate: { required: helpers.withMessage('Cette valeur est requise', required) }
-    };
+    const rules = reactive({
+        currencyFromId: [ { required: true, message: 'Cette valeur est requise', trigger: 'blur' } ],
+        currencyToId: [ { required: true, message: 'Cette valeur est requise', trigger: 'blur' } ],
+        rate: [ { required: true, message: 'Cette valeur est requise', trigger: 'blur' } ]
+    });
 
-    const v$ = useVuelidate(rules, exchangesRateForm);
-
-    let deleteDialogVisible = ref(false);
+    let deletedDialogId = ref(null);
     let expands = ref([]);
 
     onMounted(() => {
@@ -280,25 +265,60 @@
         exchangesRateForm.rate = null;
     }
 
-    function createPair() {
+    async function createPair() {
 
-        axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm).then(res => {
+        if(!ruleFormRef.value) { 
+            return;
+        }
 
-            expands.value = [];
-            exchangesRatesList.value.shift();
-            exchangesRatesList.value.unshift(res.data);
+        await ruleFormRef.value.validate((valid, fields) => {
+
+            if (valid) {
+
+                axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm).then(res => {
+
+                    expands.value = [];
+                    exchangesRatesList.value.shift();
+                    exchangesRatesList.value.unshift(res.data);
+                });
+            }
         });
     }
 
-    function updatePair(id) {
+    async function updatePair(id) {
+
+        if(!ruleFormRef.value) { 
+            return;
+        }
         
-        axios.put(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm).then(res => {
+        await ruleFormRef.value.validate((valid, fields) => {
 
-            let exchangesRatesListCopy = [...exchangesRatesList.value];
-            const exchangesRateIndex = exchangesRatesListCopy.findIndex(exchangesRate => exchangesRate.id === id);
+            if(valid) {
 
-            exchangesRatesListCopy[exchangesRateIndex] = res.data;
-            exchangesRatesList.value = exchangesRatesListCopy;
+                axios.put(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm).then(res => {
+
+                    let exchangesRatesListCopy = [...exchangesRatesList.value];
+                    const exchangesRateIndex = exchangesRatesListCopy.findIndex(exchangesRate => exchangesRate.id === id);
+
+                    exchangesRatesListCopy[exchangesRateIndex] = res.data;
+                    exchangesRatesList.value = exchangesRatesListCopy;
+                })
+            }
+        })
+    }
+
+    function deletePair(id) {
+
+        axios.delete(`http://127.0.0.1:8000/api/pairs/${id}`).then(res => {
+
+            if(expands.value.includes(id)) {
+                
+                expands.value = [];
+            }
+
+            exchangesRatesList.value = exchangesRatesList.value.filter(exchangesRate => exchangesRate.id !== id);
+
+            deletedDialogId.value = null;
         })
     }
 </script>
