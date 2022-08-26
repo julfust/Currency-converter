@@ -44,7 +44,8 @@
                                     v-model="exchangesRateForm.currencyFromId">
 
                                     <template v-for="currency in currenciesList" :key="currency.id">
-                                        <el-option 
+                                        <el-option
+                                            v-if="currency.id !== exchangesRateForm.currencyToId"
                                             v-model="exchangesRateForm.currencyFromId" 
                                             :label="currency.code" 
                                             :value="currency.id">
@@ -67,7 +68,8 @@
                                     v-model="exchangesRateForm.currencyToId">
 
                                     <template v-for="currency in currenciesList" :key="currency.id">
-                                        <el-option 
+                                        <el-option
+                                            v-if="currency.id !== exchangesRateForm.currencyFromId"
                                             v-model="exchangesRateForm.currencyToId" 
                                             :label="currency.code" 
                                             :value="currency.id">
@@ -184,6 +186,7 @@
 <script setup>
     import { onMounted, reactive, ref } from "vue";
     import axios from "axios";
+    import { ElNotification } from 'element-plus'
 
     const getRowKeys = (row) => row.id;
     const tableRowClassName = (item) => item.rowIndex === 0 && item.row.id === "new" ? 'success-row' : '';
@@ -277,12 +280,27 @@
 
             if (valid) {
 
-                axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm).then(res => {
+                axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm)
+                .then(res => {
 
                     expands.value = [];
                     exchangesRatesList.value.shift();
                     exchangesRatesList.value.unshift(res.data);
-                });
+
+                    ElNotification({
+                        title: 'Création effectuée',
+                        message: 'La paire a bien été creée',
+                        type: 'success'
+                    })
+                })
+                .catch(res => {
+
+                    ElNotification({
+                        title: 'Erreur de création',
+                        message: res.response.data.error,
+                        type: 'error'
+                    })
+                })
             }
         });
     }
@@ -297,13 +315,28 @@
 
             if(valid) {
 
-                axios.put(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm).then(res => {
+                axios.patch(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm)
+                .then(res => {
 
                     let exchangesRatesListCopy = [...exchangesRatesList.value];
                     const exchangesRateIndex = exchangesRatesListCopy.findIndex(exchangesRate => exchangesRate.id === id);
 
                     exchangesRatesListCopy[exchangesRateIndex] = res.data;
                     exchangesRatesList.value = exchangesRatesListCopy;
+
+                    ElNotification({
+                        title: 'Modification effectuée',
+                        message: 'La paire séléctionnée a bien été modifiée',
+                        type: 'success'
+                    })
+                })
+                .catch(res => {
+
+                    ElNotification({
+                        title: 'Erreur de création',
+                        message: res.response.data.error,
+                        type: 'error'
+                    })
                 })
             }
         })
@@ -321,6 +354,12 @@
             exchangesRatesList.value = exchangesRatesList.value.filter(exchangesRate => exchangesRate.id !== id);
 
             deletedDialogId.value = null;
+
+            ElNotification({
+                title: 'Suppression effectuée',
+                message: 'La paire séléctionnée a bien été supprimée',
+                type: 'success'
+            })
         })
     }
 </script>
