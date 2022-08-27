@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CurrencyResource;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class CurrencyController extends Controller
     {
         $currencies = Currency::all();
         
-        return response()->json($currencies->all());
+        return response()->json(CurrencyResource::collection($currencies));
     }
 
     /**
@@ -34,7 +35,7 @@ class CurrencyController extends Controller
                 "name" => $request->name
             ]);
 
-            return response()->json($currency);
+            return response()->json(new CurrencyResource($currency));
         }
 
         return response()->json([

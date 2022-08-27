@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Currency;
+use App\Http\Resources\PairResource;
 use App\Models\Pair;
 use Illuminate\Http\Request;
 
@@ -16,31 +16,8 @@ class PairController extends Controller
     public function index()
     {
         $pairs = Pair::all();
-        $formatedPairs = [];
-
-        foreach($pairs as $pair) {
-
-            array_push(
-                $formatedPairs, 
-                [
-                    "id" => $pair->id,
-                    "currencyFrom" => [
-                        "id" => $pair->currencyFrom->id,
-                        "code" => $pair->currencyFrom->code,
-                        "name" => $pair->currencyFrom->name,
-                    ],
-                    "currencyTo" => [
-                        "id" => $pair->currencyTo->id,
-                        "code" => $pair->currencyTo->code,
-                        "name" => $pair->currencyTo->name,
-                    ],
-                    "rate" => $pair->rate,
-                    "requestsNumber" => $pair->request->number
-                ]
-            );
-        };
         
-        return response()->json($formatedPairs);
+        return response()->json(PairResource::collection($pairs));
     }
 
     /**
@@ -70,25 +47,8 @@ class PairController extends Controller
             "currency_to_id" => $pairRequest->currencyToId,
             "rate" => $pairRequest->rate
         ]);
-
-        return response()->json(
-            [
-                "id" => $pair->id,
-                "currencyFrom" => [
-                    "id" => $pair->currencyFrom->id,
-                    "code" => $pair->currencyFrom->code,
-                    "name" => $pair->currencyFrom->name,
-                ],
-                "currencyTo" => [
-                    "id" => $pair->currencyTo->id,
-                    "code" => $pair->currencyTo->code,
-                    "name" => $pair->currencyTo->name,
-                ],
-                "rate" => $pair->rate,
-                "requestsNumber" => 0
-            ], 
-            201
-        );
+        
+        return response()->json(new PairResource($pair), 201);
     }
 
     /**
@@ -134,24 +94,7 @@ class PairController extends Controller
             "rate" => $pairRequest->rate
         ]);
 
-        return response()->json(
-            [
-                "id" => $pair->id,
-                "currencyFrom" => [
-                    "id" => $pair->currencyFrom->id,
-                    "code" => $pair->currencyFrom->code,
-                    "name" => $pair->currencyFrom->name,
-                ],
-                "currencyTo" => [
-                    "id" => $pair->currencyTo->id,
-                    "code" => $pair->currencyTo->code,
-                    "name" => $pair->currencyTo->name,
-                ],
-                "rate" => $pair->rate,
-                "requestsNumber" => $pair->request->number
-            ], 
-            201
-        );
+        return response()->json(new PairResource($pair), 201);
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\ConversionRequest;
 use App\Models\Currency;
 use App\Models\Pair;
-use App\Models\Request;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +31,7 @@ class PairTableSeeder extends Seeder
                         "currency_to_id" => $currency->id
                     ]);
 
-                    Request::create([
+                    ConversionRequest::create([
                         "pair_id" => $pair->id,
                         "number" => rand(1, 5000)
                     ]);
