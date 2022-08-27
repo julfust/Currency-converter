@@ -3,8 +3,7 @@
 use App\Http\Controllers\ConversionRequestController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\PairController;
-use App\Models\ConversionRequest;
-use Illuminate\Http\Request;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,16 +17,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::controller(RegisterController::class)->group(function(){
-//     Route::post('register', 'register');
-//     Route::post('login', 'login');
-// });
+Route::controller(RegisterController::class)->group(function(){
+    Route::post('register', 'register');
+    Route::post('login', 'login');
+});
 
-// Route::middleware('auth:sanctum')->group( function () {
-//     Route::apiResource("pairs", PairController::class);
-//     Route::apiResource("currencies", CurrencyController::class);
-// });
-
-Route::apiResource("pairs", PairController::class);
-Route::apiResource("currencies", CurrencyController::class);
-Route::apiResource("conversion-request", ConversionRequestController::class);
+Route::middleware('auth:sanctum')->group( function () {
+    Route::apiResource("pairs", PairController::class);
+    Route::apiResource("currencies", CurrencyController::class);
+    Route::apiResource("conversion-request", ConversionRequestController::class);
+});

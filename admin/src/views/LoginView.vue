@@ -1,5 +1,7 @@
 <template>
-    <LoginForm />
+    <div class="w-full flex justify-center items-start pt-16">
+        <LoginForm />
+    </div>
 </template>
 
 <style scoped>

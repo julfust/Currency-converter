@@ -211,8 +211,12 @@
 
     onMounted(() => {
 
-        Promise.all([axios("http://127.0.0.1:8000/api/currencies"), axios("http://127.0.0.1:8000/api/pairs")])
-        .then(response => {
+        const token = localStorage.getItem("authenticationToken");
+
+        Promise.all([
+            axios("http://127.0.0.1:8000/api/currencies", {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  } ), 
+            axios("http://127.0.0.1:8000/api/pairs", {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  } )
+        ]).then(response => {
 
             currenciesList.value = response[0].data;
             exchangesRatesList.value = response[1].data;
@@ -279,7 +283,7 @@
 
             if (valid) {
 
-                axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm)
+                axios.post("http://127.0.0.1:8000/api/pairs", exchangesRateForm, {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  })
                 .then(res => {
 
                     expands.value = [];
@@ -314,7 +318,7 @@
 
             if(valid) {
 
-                axios.patch(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm)
+                axios.patch(`http://127.0.0.1:8000/api/pairs/${id}`, exchangesRateForm, {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  })
                 .then(res => {
 
                     let exchangesRatesListCopy = [...exchangesRatesList.value];
@@ -343,7 +347,7 @@
 
     function deletePair(id) {
 
-        axios.delete(`http://127.0.0.1:8000/api/pairs/${id}`).then(res => {
+        axios.delete(`http://127.0.0.1:8000/api/pairs/${id}`, {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  }).then(res => {
 
             if(expands.value.includes(id)) {
                 

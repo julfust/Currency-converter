@@ -38,6 +38,7 @@
     let conversionRequestList = ref();
 
     onMounted(() => {
-        axios("http://localhost:8000/api/conversion-request").then(res => {conversionRequestList.value = res.data; console.log(conversionRequestList.value)});
+        axios("http://localhost:8000/api/conversion-request", {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  })
+        .then(res => conversionRequestList.value = res.data);
     })
 </script>

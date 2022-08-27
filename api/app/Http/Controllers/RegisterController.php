@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
-class RegisterController extends Controller
+class RegisterController extends BaseController
 {
    
     /**
