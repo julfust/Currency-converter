@@ -9,6 +9,11 @@ class ConversionRequest extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'pair_id',
+        'number'
+    ];
+
     public function pair() {
         return $this->belongsTo(Pair::class);
     }

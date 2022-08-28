@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PairResource;
+use App\Models\ConversionRequest;
 use App\Models\Pair;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,11 @@ class PairController extends Controller
             "currency_from_id" => $pairRequest->currencyFromId,
             "currency_to_id" => $pairRequest->currencyToId,
             "rate" => $pairRequest->rate
+        ]);
+
+        ConversionRequest::create([
+            "pair_id" => $pair->id,
+            "number" => 0
         ]);
         
         return response()->json(new PairResource($pair), 201);

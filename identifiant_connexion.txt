@@ -1,0 +1,3 @@
+Nom complete: Philippe
+Adresse email: philippe@admin.com
+Mots de passe: password
