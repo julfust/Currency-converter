@@ -35,7 +35,10 @@ class PairController extends Controller
             ], 409);
         }
 
-        if(!empty(Pair::where('currency_from_id', $pairRequest->currencyFromId)->where("currency_to_id", $pairRequest->currencyToId)->first())) {
+        if(
+            !empty(Pair::where('currency_from_id', $pairRequest->currencyFromId)->where("currency_to_id", $pairRequest->currencyToId)->first()) ||
+            !empty(Pair::where('currency_from_id', $pairRequest->currencyToId)->where("currency_to_id", $pairRequest->currencyFromId)->first())
+        ) {
 
             return response()->json([
                 "error" => "La paire de conversion existe déjà"
@@ -79,7 +82,10 @@ class PairController extends Controller
             ], 409);
         }
 
-        if(!empty(Pair::where('currency_from_id', $pairRequest->currencyFromId)->where("currency_to_id", $pairRequest->currencyToId)->first())) {
+        if(
+            !empty(Pair::where('currency_from_id', $pairRequest->currencyFromId)->where("currency_to_id", $pairRequest->currencyToId)->first()) ||
+            !empty(Pair::where('currency_from_id', $pairRequest->currencyToId)->where("currency_to_id", $pairRequest->currencyFromId)->first())
+        ) {
 
             return response()->json([
                 "error" => "La paire de conversion existe déjà"

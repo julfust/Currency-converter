@@ -17,28 +17,50 @@ class PairTableSeeder extends Seeder
      */
     public function run()
     {
-        $currencies = Currency::all();
 
-        for($i = 0; $i < count($currencies); $i++) {
+        $pair = Pair::create([
+            "rate" => 0.85,
+            "currency_from_id" => 1,
+            "currency_to_id" => 2
+        ]);
 
-            foreach($currencies as $currency) {
+        ConversionRequest::create([
+            "pair_id" => $pair->id,
+            "number" => rand(1, 5000)
+        ]);
 
-                if($currency->id !== $currencies[$i]->id) {
+        $pair = Pair::create([
+            "rate" => 0.85,
+            "currency_from_id" => 2,
+            "currency_to_id" => 3
+        ]);
 
-                    $pair = Pair::create([
-                        "rate" => 0.85,
-                        "currency_from_id" => $currencies[$i]->id,
-                        "currency_to_id" => $currency->id
-                    ]);
+        ConversionRequest::create([
+            "pair_id" => $pair->id,
+            "number" => rand(1, 5000)
+        ]);
 
-                    ConversionRequest::create([
-                        "pair_id" => $pair->id,
-                        "number" => rand(1, 5000)
-                    ]);
-                }
-    
-            }
+        $pair = Pair::create([
+            "rate" => 0.85,
+            "currency_from_id" => 3,
+            "currency_to_id" => 4
+        ]);
 
-        }
+        ConversionRequest::create([
+            "pair_id" => $pair->id,
+            "number" => rand(1, 5000)
+        ]);
+
+        $pair = Pair::create([
+            "rate" => 0.85,
+            "currency_from_id" => 4,
+            "currency_to_id" => 5
+        ]);
+
+        ConversionRequest::create([
+            "pair_id" => $pair->id,
+            "number" => rand(1, 5000)
+        ]);
+
     }
 }
