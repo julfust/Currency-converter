@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
 
+     /**
+     * Return message to check if service is functionnal.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function functionnalService()
     {
         return response()->json(["message" => "Service opérationnel"]);
@@ -19,8 +24,6 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
-    //  http://localhost:8000/api/testConversion?$currencyFromId=2&$currencyToId=3&amount=500
     public function getAllPairs()
     {
         $pairs = Pair::all();
@@ -28,6 +31,11 @@ class TestController extends Controller
         return response()->json(PairResource::collection($pairs));
     }
 
+    /**
+     * Function to convert currencies.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function convertCurrencies(Request $conversionRequest)
     {
 

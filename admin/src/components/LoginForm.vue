@@ -62,19 +62,18 @@
     </el-form>
 </template>
 
-<style scoped>
-
-</style>
-
 <script setup>
     import { reactive, ref } from "vue";
     import { useRouter } from "vue-router";
     import axios from "axios";
 
+    // Variable for using navigation programmatically
     const router = useRouter();
 
+    // Element ref to the login form
     const ruleFormRef = ref();
 
+    // Login form data
     let loginForm = reactive({
         name: "",
         email: "",
@@ -82,6 +81,7 @@
         c_password: ""
     });
 
+    // Validation rules for login form
     const rules = reactive({
         name: { required: true, message: "Ce champs est requis", trigger: "blur" },
         email: [
@@ -95,6 +95,7 @@
         ]
     })
 
+    // Custom validator for confirm password validation
     function checkConfirmPassword(rule, value, callback) {
 
         if (value !== loginForm.password) {
@@ -104,6 +105,7 @@
         }
     }
 
+    // Function used for user login
     async function login() {
 
         if(!ruleFormRef.value) {

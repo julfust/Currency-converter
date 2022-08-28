@@ -35,8 +35,10 @@
     import { ref, onMounted } from "vue";
     import axios from "axios";
 
+    // Variable for conversion request list reactive render
     let conversionRequestList = ref();
 
+    // Life cycle hook: at the beginning we do api request to get conversion request list and assign it to conversionRequestList
     onMounted(() => {
         axios("http://localhost:8000/api/conversion-request", {  headers: {"Authorization" : `Bearer ${localStorage.getItem("authenticationToken")}`}  })
         .then(res => conversionRequestList.value = res.data);

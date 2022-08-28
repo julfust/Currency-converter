@@ -190,7 +190,10 @@
     const getRowKeys = (row) => row.id;
     const tableRowClassName = (item) => item.rowIndex === 0 && item.row.id === "new" ? 'success-row' : '';
 
+    // Variable for currencies list reactive render
     let currenciesList = ref();
+
+    // Variable for exchanges rates list reactive render
     let exchangesRatesList = ref();
 
     const ruleFormRef = ref();
@@ -209,6 +212,7 @@
     let deletedDialogId = ref(null);
     let expands = ref([]);
 
+    // Life cycle hook: at the beginning we do api request to get pairs and currencies list and assign it ours reactives states
     onMounted(() => {
 
         const token = localStorage.getItem("authenticationToken");

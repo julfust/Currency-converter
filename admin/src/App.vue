@@ -1,15 +1,6 @@
 <script setup>
   import HomeView from "@/views/HomeView.vue";
   import Header from "@/components/Header.vue";
-  import { RouterView, useRouter } from "vue-router";
-
-  const router = useRouter();
-
-  function logout() {
-
-    localStorage.removeItem("authenticationToken");
-    router.push("/");
-  }
 </script>
 
 <template>

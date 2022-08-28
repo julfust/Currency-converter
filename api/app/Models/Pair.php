@@ -9,12 +9,20 @@ class Pair extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'currency_from_id',
         'currency_to_id',
         'rate'
     ];
 
+    /**
+     * Define relation between entities
+     */
     public function request() {
         return $this->hasOne(Request::class);
     }

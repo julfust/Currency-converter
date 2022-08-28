@@ -28,10 +28,13 @@
     import { ref } from "vue";
     import { RouterLink, useRouter } from "vue-router";
 
+    // Variable for using navigation programmatically
     const router = useRouter();
 
+    // Variable for v-bind class render on nav-link active (text-color)
     let selected = ref("home");
 
+    // Function used for user logout
     function logout() {
 
         localStorage.removeItem("authenticationToken");
